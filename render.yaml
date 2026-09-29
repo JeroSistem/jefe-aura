@@ -3,7 +3,7 @@ services:
     name: ciclo-datos-salud
     runtime: static
     buildCommand: echo "Sitio estatico, sin compilacion"
-    staticPublishPath: .
+    staticPublishPath: ./public
     envVars:
       - key: SKIP_INSTALL_DEPS
         value: "true"
