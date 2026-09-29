@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f9fc">
+  <meta name="description" content="Explora el ciclo de vida de los datos en salud dentro de una IPS, desde la atención hasta la mejora continua.">
+  <title>Ciclo de vida de los datos en salud | IPS</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #073d70;
+      background: #eef7fb;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 50% 24%, rgba(196, 235, 247, .5), transparent 38rem),
+        #eef7fb;
+    }
+
+    .page {
+      width: min(100%, 1120px);
+      margin: 0 auto;
+      padding: clamp(12px, 3vw, 32px) clamp(10px, 2vw, 22px) 36px;
+    }
+
+    .artwork {
+      position: relative;
+      width: min(100%, 977px);
+      margin: 0 auto;
+      line-height: 0;
+      background: #fff;
+      box-shadow: 0 22px 66px rgba(14, 77, 120, .13);
+    }
+
+    .artwork > img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .hotspot {
+      position: absolute;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 32px;
+      background: transparent;
+      color: transparent;
+      cursor: pointer;
+      line-height: 1.25;
+      transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .hotspot::after {
+      content: "Explorar etapa";
+      position: absolute;
+      left: 50%;
+      bottom: 12px;
+      padding: 8px 12px;
+      transform: translate(-50%, 5px);
+      border: 1px solid rgba(116, 207, 229, .55);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: 0 5px 18px rgba(13, 84, 128, .14);
+      color: #075080;
+      font-size: clamp(11px, 1.4vw, 14px);
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      white-space: nowrap;
+    }
+
+    .hotspot:hover,
+    .hotspot:focus-visible {
+      border-color: rgba(23, 154, 190, .72);
+      background: rgba(106, 211, 230, .11);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .55);
+      outline: none;
+    }
+
+    .hotspot:hover::after,
+    .hotspot:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
+
+    .hotspot[data-step="1"] { left: 30.5%; top: 9.5%; width: 38.5%; height: 15.5%; }
+    .hotspot[data-step="2"] { left: 65.2%; top: 21.6%; width: 34.3%; height: 14.8%; }
+    .hotspot[data-step="3"] { left: 71.5%; top: 40.5%; width: 28.2%; height: 15.9%; }
+    .hotspot[data-step="4"] { left: 69.3%; top: 62.0%; width: 30.5%; height: 15.8%; }
+    .hotspot[data-step="5"] { left: 17.0%; top: 64.1%; width: 42.2%; height: 16.4%; }
+    .hotspot[data-step="6"] { left: .7%; top: 41.8%; width: 31.4%; height: 16.8%; }
+    .hotspot[data-step="7"] { left: 1.2%; top: 21.5%; width: 34.1%; height: 15.9%; }
+
+    .explore {
+      width: min(100%, 977px);
+      margin: 22px auto 0;
+      padding: clamp(18px, 3vw, 28px);
+      border: 1px solid #d3eaf4;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, .93);
+      box-shadow: 0 10px 36px rgba(14, 77, 120, .08);
+    }
+
+    .explore h1 {
+      margin: 0;
+      font-size: clamp(20px, 3vw, 27px);
+      letter-spacing: -.025em;
+    }
+
+    .explore > p {
+      margin: 7px 0 18px;
+      color: #476984;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .step-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .step-link {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-height: 54px;
+      padding: 9px 12px;
+      border: 1px solid #d8ebf3;
+      border-radius: 13px;
+      background: #f8fcfe;
+      color: #123f68;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color .16s ease, background .16s ease, transform .16s ease;
+    }
+
+    .step-link:hover { border-color: #73cadd; background: #edfaff; transform: translateY(-1px); }
+    .step-link:focus-visible { outline: 3px solid #61bfd5; outline-offset: 2px; }
+
+    .step-number {
+      display: grid;
+      flex: 0 0 32px;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #0976b1, #075285);
+      color: white;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .step-link:nth-child(2) .step-number,
+    .step-link:nth-child(4) .step-number,
+    .step-link:nth-child(6) .step-number { background: linear-gradient(145deg, #12a6aa, #08727c); }
+
+    .step-name { font-size: 14px; font-weight: 700; line-height: 1.28; }
+
+    dialog {
+      width: min(92vw, 560px);
+      max-height: min(84vh, 680px);
+      padding: 0;
+      overflow: auto;
+      border: 1px solid #d4eaf3;
+      border-radius: 24px;
+      background: #fff;
+      color: #123f68;
+      box-shadow: 0 28px 100px rgba(4, 46, 81, .3);
+    }
+
+    dialog::backdrop { background: rgba(5, 37, 65, .53); backdrop-filter: blur(4px); }
+
+    .dialog-content { padding: clamp(22px, 5vw, 34px); }
+
+    .dialog-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 15px;
+    }
+
+    .dialog-index {
+      color: #07819f;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .close-button {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid #d9eaf0;
+      border-radius: 50%;
+      background: #f6fbfd;
+      color: #174b71;
+      font-size: 23px;
+      cursor: pointer;
+    }
+
+    .close-button:hover { background: #e9f8fb; }
+    .close-button:focus-visible, .dialog-nav button:focus-visible { outline: 3px solid #61bfd5; outline-offset: 2px; }
+
+    dialog h2 { margin: 0 0 12px; color: #083f70; font-size: clamp(24px, 5vw, 32px); line-height: 1.12; }
+    dialog .summary { margin: 0; color: #476984; font-size: 16px; line-height: 1.65; }
+
+    .detail-label {
+      margin: 23px 0 10px;
+      color: #087e99;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .detail-list { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+    .detail-list li { position: relative; padding-left: 24px; color: #193f60; line-height: 1.45; }
+    .detail-list li::before { content: ""; position: absolute; top: .56em; left: 3px; width: 9px; height: 9px; border-radius: 50%; background: #13a3aa; box-shadow: 0 0 0 4px #e2f6f7; }
+
+    .dialog-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 27px; }
+    .dialog-nav button {
+      min-height: 44px;
+      padding: 10px 15px;
+      border: 1px solid #cfe6f0;
+      border-radius: 12px;
+      background: #f5fbfd;
+      color: #075080;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .dialog-nav button:hover:not(:disabled) { background: #e8f8fb; }
+    .dialog-nav button:disabled { opacity: .4; cursor: default; }
+
+    .footer-note {
+      margin: 16px auto 0;
+      color: #648096;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (min-width: 760px) {
+      .step-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .step-link:last-child { grid-column: 2 / 3; }
+    }
+
+    @media (max-width: 520px) {
+      .page { padding-inline: 0; padding-top: 0; }
+      .artwork { box-shadow: 0 12px 32px rgba(14, 77, 120, .1); }
+      .hotspot { border-radius: 20px; }
+      .hotspot::after { bottom: 5px; padding: 5px 8px; font-size: 10px; }
+      .explore { width: calc(100% - 20px); margin-top: 15px; padding: 17px; border-radius: 18px; }
+      .step-list { grid-template-columns: 1fr; }
+      .step-link:last-child { grid-column: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="artwork" aria-label="Infografía interactiva del ciclo de vida de los datos en salud">
+      <img src="assets/infografia-salud.png" width="977" height="1610" alt="Infografía: ciclo de vida de los datos en salud dentro de una IPS. Muestra siete etapas, desde la generación de la información hasta la mejora continua.">
+      <button class="hotspot" data-step="1" aria-label="Explorar etapa 1: Generación de la información"><span class="sr-only">Generación de la información</span></button>
+      <button class="hotspot" data-step="2" aria-label="Explorar etapa 2: Registro de los datos"><span class="sr-only">Registro de los datos</span></button>
+      <button class="hotspot" data-step="3" aria-label="Explorar etapa 3: Validación de la calidad del dato"><span class="sr-only">Validación de la calidad del dato</span></button>
+      <button class="hotspot" data-step="4" aria-label="Explorar etapa 4: Consolidación de la información"><span class="sr-only">Consolidación de la información</span></button>
+      <button class="hotspot" data-step="5" aria-label="Explorar etapa 5: Reporte y transmisión"><span class="sr-only">Reporte y transmisión</span></button>
+      <button class="hotspot" data-step="6" aria-label="Explorar etapa 6: Análisis e interpretación"><span class="sr-only">Análisis e interpretación</span></button>
+      <button class="hotspot" data-step="7" aria-label="Explorar etapa 7: Mejora continua"><span class="sr-only">Mejora continua</span></button>
+    </section>
+
+    <section class="explore" aria-labelledby="explore-title">
+      <h1 id="explore-title">Explora el ciclo</h1>
+      <p>Selecciona una etapa para ver cómo los datos acompañan la atención y apoyan la mejora continua en salud.</p>
+      <nav class="step-list" aria-label="Etapas del ciclo de vida de los datos en salud">
+        <button class="step-link" data-step="1"><span class="step-number">1</span><span class="step-name">Generación de la información</span></button>
+        <button class="step-link" data-step="2"><span class="step-number">2</span><span class="step-name">Registro de los datos</span></button>
+        <button class="step-link" data-step="3"><span class="step-number">3</span><span class="step-name">Validación de la calidad del dato</span></button>
+        <button class="step-link" data-step="4"><span class="step-number">4</span><span class="step-name">Consolidación de la información</span></button>
+        <button class="step-link" data-step="5"><span class="step-number">5</span><span class="step-name">Reporte y transmisión</span></button>
+        <button class="step-link" data-step="6"><span class="step-number">6</span><span class="step-name">Análisis e interpretación</span></button>
+        <button class="step-link" data-step="7"><span class="step-number">7</span><span class="step-name">Mejora continua</span></button>
+      </nav>
+    </section>
+    <p class="footer-note">Gestión de la información en salud</p>
+  </main>
+
+  <dialog aria-labelledby="dialog-title" aria-describedby="dialog-summary">
+    <div class="dialog-content">
+      <div class="dialog-topline">
+        <span class="dialog-index" id="dialog-index"></span>
+        <button class="close-button" type="button" aria-label="Cerrar">×</button>
+      </div>
+      <h2 id="dialog-title"></h2>
+      <p class="summary" id="dialog-summary"></p>
+      <p class="detail-label" id="detail-label">En esta etapa</p>
+      <ul class="detail-list" id="detail-list"></ul>
+      <div class="dialog-nav">
+        <button type="button" id="previous-step">← Anterior</button>
+        <button type="button" id="next-step">Siguiente →</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    const steps = [
+      {
+        title: "Generación de la información",
+        summary: "Los datos se originan durante la atención de cada persona. Cada contacto con la IPS aporta información que puede orientar las decisiones de salud.",
+        label: "La información se origina en",
+        details: ["Consulta externa", "Urgencias", "Hospitalización", "Farmacia", "Laboratorio"]
+      },
+      {
+        title: "Registro de los datos",
+        summary: "La información de la atención se deja registrada en sistemas clínicos y administrativos para que pueda consultarse y gestionarse.",
+        label: "Se registra en",
+        details: ["Historia clínica", "Sistemas institucionales", "RIPS", "Registros administrativos"]
+      },
+      {
+        title: "Validación de la calidad del dato",
+        summary: "Antes de usar o compartir los datos, se revisa que sean completos, correctos, coherentes y estén disponibles a tiempo.",
+        label: "Criterios de revisión",
+        details: ["Completitud", "Exactitud", "Consistencia", "Oportunidad"]
+      },
+      {
+        title: "Consolidación de la información",
+        summary: "Los datos de las distintas áreas se integran para construir una base institucional única que facilite una visión conjunta.",
+        label: "Propósito",
+        details: ["Integrar los datos de todas las áreas", "Construir una base institucional única", "Facilitar el análisis conjunto de la información"]
+      },
+      {
+        title: "Reporte y transmisión",
+        summary: "La información consolidada se envía a plataformas y sistemas de reporte del sector salud.",
+        label: "Sistemas de destino",
+        details: ["PISIS", "SISPRO", "SIVIGILA", "RUAF", "REPS"]
+      },
+      {
+        title: "Análisis e interpretación",
+        summary: "Los equipos calculan y revisan indicadores para entender el desempeño de la atención y detectar asuntos que requieren seguimiento.",
+        label: "Indicadores revisados",
+        details: ["Calidad", "Seguridad del paciente", "Oportunidad", "Gestión del riesgo", "Satisfacción del usuario"]
+      },
+      {
+        title: "Mejora continua",
+        summary: "Los resultados del análisis se convierten en acciones para cerrar brechas y mejorar los procesos de atención.",
+        label: "Acciones de mejora",
+        details: ["Identificar brechas", "Diseñar planes de mejoramiento", "Capacitar al personal", "Hacer seguimiento a las acciones"]
+      }
+    ];
+
+    const dialog = document.querySelector("dialog");
+    const title = document.querySelector("#dialog-title");
+    const summary = document.querySelector("#dialog-summary");
+    const index = document.querySelector("#dialog-index");
+    const label = document.querySelector("#detail-label");
+    const list = document.querySelector("#detail-list");
+    const previous = document.querySelector("#previous-step");
+    const next = document.querySelector("#next-step");
+    let currentStep = 0;
+    let returnFocus = null;
+
+    function showStep(number) {
+      currentStep = number;
+      const step = steps[number];
+      index.textContent = `Etapa ${number + 1} de ${steps.length}`;
+      title.textContent = step.title;
+      summary.textContent = step.summary;
+      label.textContent = step.label;
+      list.replaceChildren(...step.details.map((detail) => {
+        const item = document.createElement("li");
+        item.textContent = detail;
+        return item;
+      }));
+      previous.disabled = number === 0;
+      next.disabled = number === steps.length - 1;
+    }
+
+    function openStep(number, source) {
+      returnFocus = source;
+      showStep(number);
+      if (!dialog.open) dialog.showModal();
+    }
+
+    document.querySelectorAll("[data-step]").forEach((button) => {
+      button.addEventListener("click", () => openStep(Number(button.dataset.step) - 1, button));
+    });
+
+    document.querySelector(".close-button").addEventListener("click", () => dialog.close());
+    previous.addEventListener("click", () => { if (currentStep > 0) showStep(currentStep - 1); });
+    next.addEventListener("click", () => { if (currentStep < steps.length - 1) showStep(currentStep + 1); });
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.addEventListener("close", () => returnFocus?.focus());
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft" && currentStep > 0) showStep(currentStep - 1);
+      if (event.key === "ArrowRight" && currentStep < steps.length - 1) showStep(currentStep + 1);
+    });
+  </script>
+</body>
+</html>
